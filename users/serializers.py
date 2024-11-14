@@ -50,40 +50,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
 
-# class LoginSerializer(serializers.Serializer):
-#     email_or_phone = serializers.CharField(required=True)
-#     password = serializers.CharField(write_only=True, required=True)
-#
-#     def validate_email_or_phone(self, value):
-#         email_validator = EmailValidator()
-#         try:
-#             email_validator(value)
-#             self.context['is_email'] = True
-#         except ValidationError:
-#             if value.isdigit() and len(value) == 11:
-#                 self.context['is_phone'] = True
-#             else:
-#                 raise serializers.ValidationError(_("Enter a valid email or phone number."))
-#
-#         return value
-#
-#     def validate(self, data):
-#         email_or_phone = data.get('email_or_phone')
-#         password = data.get('password')
-#         print("email or phone", email_or_phone, password)
-#         # Determine if identifier is email or phone
-#         auth_kwargs = {'username': email_or_phone, 'password': password}
-#         if self.context.get('is_phone'):
-#             auth_kwargs = {'phone': email_or_phone, 'password': password}
-#
-#         user = authenticate(**auth_kwargs)
-#         print("user", user, auth_kwargs)
-#         if user is None:
-#             raise serializers.ValidationError(_("Invalid email/phone or password."))
-#
-#         data['user'] = user
-#         return data
-
 class LoginSerializer(serializers.Serializer):
     email_or_phone = serializers.CharField(required=True)
     password = serializers.CharField(write_only=True, required=True)
@@ -94,7 +60,7 @@ class LoginSerializer(serializers.Serializer):
             email_validator(value)
             self.context['is_email'] = True
         except ValidationError:
-            if value.isdigit() and len(value) == 11:  # Assuming phone is 11 digits
+            if value.isdigit() and len(value) == 11:
                 self.context['is_phone'] = True
             else:
                 raise serializers.ValidationError(_("Enter a valid email or phone number."))
@@ -104,20 +70,21 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         email_or_phone = data.get('email_or_phone')
         password = data.get('password')
-
-        # Determine if the identifier is email or phone
+        print("email or phone", email_or_phone, password)
+        # Determine if identifier is email or phone
         auth_kwargs = {'username': email_or_phone, 'password': password}
-
-        # Adjust auth_kwargs if it's phone
         if self.context.get('is_phone'):
             auth_kwargs = {'phone': email_or_phone, 'password': password}
 
-        # Authenticate the user
-        user = authenticate(request=self.context.get('request'), **auth_kwargs)
-        print('user', user)
+        user = authenticate(**auth_kwargs)
+        print("user", user, auth_kwargs)
         if user is None:
             raise serializers.ValidationError(_("Invalid email/phone or password."))
 
         data['user'] = user
-        print("data", data)
         return data
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['email', 'contract_number', 'first_name', 'last_name', 'user_type', 'gender', 'date_of_birth', 'company_id', 'address']

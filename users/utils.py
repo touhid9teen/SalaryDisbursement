@@ -14,6 +14,7 @@ def token_generator(user):
         'gender': user.gender,
         'company': user.company_id,
         'user': user.user_type,
+        'id': user.id,
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
     return token

@@ -3,9 +3,9 @@ from requests import Response
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
 from users.models import Users
-from users.serializers import RegisterSerializer, LoginSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from .authenticate import CustomAuthentication
 from .utils import token_generator
 
 
@@ -34,11 +34,23 @@ class LoginView(APIView):
             print('user', user)
             token = token_generator(user)
             print('token', token)
-            return Response({'token': token}, status=status.HTTP_200_OK)
+            return Response({'access_token': token}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserInfoView(APIView):
+    authentication_classes = [CustomAuthentication]
+    def get(self, request):
+        try:
+            user = Users.objects.get(id=request.user.id)
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

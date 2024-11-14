@@ -54,13 +54,9 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'accounts.authenticate.CustomAuthentication',
-    # ],
-    # 'DEFAULT_FILTER_BACKENDS': [
-    #     'django_filters.rest_framework.DjangoFilterBackend',
-    # ],
-
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'users.authenticate.CustomAuthentication',
+    ],
 }
 
 

@@ -1,5 +1,4 @@
 import uuid
-
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -42,14 +41,17 @@ class Users(AbstractUser):
 
     user_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     username = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
     contract_number = models.CharField(max_length=50)
     user_type = models.CharField(max_length=10, choices=USER_TYPES)
     password = models.CharField(max_length=100)
-    is_verified = models.BooleanField(default=False)
-    date_of_birth = models.DateField(blank=True, null=True)
-    gender = models.BooleanField(default=False)
-    address = models.CharField(max_length=50)
+    conform_password = models.CharField(max_length=100)
+    gender = models.CharField(max_length=50)
+    date_of_birth = models.DateField()
+    address = models.CharField(max_length=100)
+    company_id = models.IntegerField()
 
     objects = UserManager()
 

@@ -18,16 +18,17 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    '''create superuser '''
-    def create_superuser(self, email, password=None):
-        user = self.create_user(
-            email=email,
-            password=password,
-        )
-        user.is_admin = True
-        user.is_superuser = True
-        user.save(using=self._db)
-        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        '''Creates and saves a new superuser'''
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        # Ensure user_type is set to 'admin' if not provided
+        if extra_fields.get('user_type') is None:
+            extra_fields['user_type'] = 'admin'
+
+        return self.create_user(email, password, **extra_fields)
 
 
 
@@ -40,23 +41,23 @@ class Users(AbstractUser):
     )
 
     user_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    username = models.CharField(max_length=50)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+    username = models.CharField(max_length=50, null=True, blank=True)
+    first_name = models.CharField(max_length=50, null=True, blank=True)
+    last_name = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(unique=True)
-    contract_number = models.CharField(max_length=50)
+    contract_number = models.CharField(max_length=50, null=True, blank=True)
     user_type = models.CharField(max_length=10, choices=USER_TYPES)
     password = models.CharField(max_length=100)
     conform_password = models.CharField(max_length=100)
-    gender = models.CharField(max_length=50)
-    date_of_birth = models.DateField()
-    address = models.CharField(max_length=100)
-    company_id = models.IntegerField()
+    gender = models.CharField(max_length=50, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
+    company_id = models.IntegerField(null=True, blank=True)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['contract_number', 'user_type']
+    REQUIRED_FIELDS = []
 
 
     def __str__(self):

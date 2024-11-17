@@ -18,6 +18,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             'contract_number': {'required': True}
         }
 
+    # def validate(self, attrs):
+
+
     def validate_email(self, email):
         if Users.objects.filter(email=email).exists():
             raise serializers.ValidationError('Email already registered')
@@ -74,7 +77,7 @@ class LoginSerializer(serializers.Serializer):
         # Determine if identifier is email or phone
         auth_kwargs = {'username': email_or_phone, 'password': password}
         if self.context.get('is_phone'):
-            auth_kwargs = {'phone': email_or_phone, 'password': password}
+            auth_kwargs = {'username': email_or_phone, 'password': password}
 
         user = authenticate(**auth_kwargs)
         print("user", user, auth_kwargs)

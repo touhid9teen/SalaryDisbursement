@@ -11,7 +11,7 @@ class EmailOrPhoneBackend(ModelBackend):
                 return None
         else:
             try:
-                user = Users.objects.get(username=username)
+                user = Users.objects.get(contract_number=username)
             except Users.DoesNotExist:
                 return None
 

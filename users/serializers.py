@@ -18,6 +18,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             'contract_number': {'required': True}
         }
 
+    # def validate(self, attrs):
+
+
     def validate_email(self, email):
         if Users.objects.filter(email=email).exists():
             raise serializers.ValidationError('Email already registered')

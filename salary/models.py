@@ -14,7 +14,7 @@ class SalaryBeneficiary(models.Model):
 
 
 class SalaryDisbursement(models.Model):
-    employ = models.ForeignKey(Users, on_delete=models.CASCADE)
+    employ = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='employ')
     wallet_no = models.IntegerField()
     amount = models.IntegerField()
     update = models.DateTimeField(auto_now_add=True)

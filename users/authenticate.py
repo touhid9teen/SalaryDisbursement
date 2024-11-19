@@ -44,7 +44,6 @@ class CustomAuthentication(BaseAuthentication):
     def decode_token(self, token):
         try:
             decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-            print('decoded_token', decoded_token)
             return decoded_token
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Token has expired')

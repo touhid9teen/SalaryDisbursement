@@ -67,6 +67,7 @@ REST_FRAMEWORK = {
 AUTHENTICATION_BACKENDS = [
     'users.auth_backends.EmailOrPhoneBackend',
     'django.contrib.auth.backends.ModelBackend',
+
 ]
 
 # JWT settings (you can customize them)
@@ -155,3 +156,25 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery Configuration Options
+
+
+
+
+
+
+# Redis setting
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',  # Default Redis port; use /1 as the cache DB number
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+

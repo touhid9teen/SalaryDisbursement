@@ -36,10 +36,8 @@ class LoginView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         try:
             user = Users.objects.get(Q(contract_number=serializer.data['email_or_phone']) | Q(email=serializer.data['email_or_phone']))
-            print('user', user)
             token = token_generator(user)
             refresh_token = refresh_token_generator(user)
-            print('token', token)
             return Response({'access_token': token, 'refresh_token': refresh_token}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -51,6 +49,7 @@ class UserInfoView(APIView):
     authentication_classes = [CustomAuthentication]
     def get(self, request):
         try:
+            print("user", request.user)
             user = Users.objects.get(id=request.user.id)
             serializer = UserSerializer(user)
             return Response(serializer.data)

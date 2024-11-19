@@ -90,6 +90,6 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['email', 'contract_number', 'first_name', 'last_name', 'user_type', 'gender', 'date_of_birth', 'company_id', 'address']
+        fields = ['id', 'email', 'contract_number', 'first_name', 'last_name', 'user_type', 'gender', 'date_of_birth', 'company_id', 'address']
 
 

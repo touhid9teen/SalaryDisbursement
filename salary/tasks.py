@@ -5,8 +5,6 @@ from .models import SalaryDisbursement, SalaryBeneficiary
 
 @shared_task
 def update_Salary_Disbursement(content):
-    print("TASKS CALLED ")
-    print("content = ", content)
     update_count = 0
     for field_ in content:
         try:

@@ -35,7 +35,6 @@ class SalaryCreateAndListView(APIView):
                     content = file_.read().strip()
                     content_json = json.loads(content)
                     update_Salary_Disbursement.delay(content_json)
-                    print("data", content_json)
             except json.JSONDecodeError as e:
                 return Response(f"Error decoding JSON: {e}")
             except Exception as e:

@@ -7,28 +7,36 @@ from users.models import Users
 from django.utils.translation import gettext_lazy as _
 
 
+from django.core.validators import validate_email
+from rest_framework import serializers
+from .models import Users
+
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    conform_password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     class Meta:
         model = Users
-        fields = ['email', 'contract_number', 'first_name', 'last_name', 'user_type', 'password', 'conform_password', 'gender', 'date_of_birth', 'company_id', 'address']
+        fields = [
+            'email', 'contract_number', 'password',
+            'conform_password', 'first_name', 'last_name',
+            'user_type', 'gender', 'date_of_birth',
+            'address', 'company_id'
+        ]
         extra_kwargs = {
-            'email': {'required': True},
-            'contract_number': {'required': True}
+            'password': {'write_only' : True, 'required' : True },
+            'conform_password': {'write_only' : True, 'required' : True }
         }
 
-    # def validate(self, attrs):
-
-
-    def validate_email(self, email):
+    def validate(self, attrs):
+        # Validate email
+        email = attrs.get('email')
         if Users.objects.filter(email=email).exists():
-            raise serializers.ValidationError('Email already registered')
-        validate_email(email)
-        return email
+            raise serializers.ValidationError({'email': 'Email already registered'})
+        try:
+            validate_email(email)
+        except Exception as e:
+            raise serializers.ValidationError({'email': 'Invalid email address'})
 
-    def validate_contract_number(self, contract_number):
-        contract_number = contract_number.strip()
+        # Validate contract number
+        contract_number = attrs.get('contract_number', '').strip()
 
         if contract_number.startswith('+'):
             contract_number = contract_number[3:]
@@ -36,21 +44,27 @@ class RegisterSerializer(serializers.ModelSerializer):
             contract_number = contract_number[2:]
 
         if not contract_number.isdigit() or len(contract_number) != 11:
-            raise serializers.ValidationError(
-                'Contract number must contain 11 digits (e.g., 01XXXXXXXXX).'
-            )
+            raise serializers.ValidationError({
+                'contract_number': 'Contract number must contain 11 digits (e.g., 01XXXXXXXXX).'
+            })
 
         if Users.objects.filter(contract_number=contract_number).exists():
-            raise serializers.ValidationError('Contract number is already registered.')
+            raise serializers.ValidationError({'contract_number': 'Contract number is already registered.'})
 
-        return contract_number
+        # Ensure contract_number back to original value for consistency
+        attrs['contract_number'] = contract_number
 
-    def validate(self, attrs):
+        # Validate password
         password = attrs.get('password')
         conform_password = attrs.get('conform_password')
         if password != conform_password:
-            raise serializers.ValidationError('Passwords do not match.')
+            raise serializers.ValidationError({'password': 'Passwords do not match.'})
+
         return attrs
+
+    def create(self, validated_data):
+        validated_data.pop('conform_password')  # Remove conform_password before saving
+        return Users.objects.create_user(**validated_data)
 
 
 class LoginSerializer(serializers.Serializer):

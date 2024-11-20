@@ -19,9 +19,7 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                validated_data = serializer.validated_data
-                validated_data.pop('conform_password')
-                user = Users.objects.create_user(**validated_data)
+                serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({'error': f"User registration failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
